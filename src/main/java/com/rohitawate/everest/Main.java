@@ -15,7 +15,6 @@
  */
 package com.rohitawate.everest;
 
-import com.rohitawate.everest.misc.Services;
 import com.rohitawate.everest.misc.ThemeManager;
 import com.rohitawate.everest.settings.SettingsLoader;
 import javafx.application.Application;
@@ -27,18 +26,17 @@ import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+
 public class Main extends Application {
+    public static final String APP_NAME = "Everest";
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Services.start();
-        Services.startServicesThread.join();
-
         SettingsLoader settingsLoader = new SettingsLoader();
         settingsLoader.settingsLoaderThread.join();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/homewindow/HomeWindow.fxml"));
         Parent homeWindow = loader.load();
-        Services.homeWindowController = loader.getController();
         Stage dashboardStage = new Stage();
         ThemeManager.setTheme(homeWindow);
 
@@ -48,7 +46,7 @@ public class Main extends Application {
 
         dashboardStage.getIcons().add(new Image(getClass().getResource("/assets/Logo.png").toExternalForm()));
         dashboardStage.setScene(new Scene(homeWindow));
-        dashboardStage.setTitle("Everest");
+        dashboardStage.setTitle(APP_NAME);
         dashboardStage.show();
     }
 

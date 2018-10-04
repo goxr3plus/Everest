@@ -17,8 +17,8 @@
 package com.rohitawate.everest.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.rohitawate.everest.logging.LoggingService;
 import com.rohitawate.everest.misc.EverestUtilities;
-import com.rohitawate.everest.misc.Services;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,11 @@ public class SettingsLoader implements Runnable {
             File settingsFile = new File("Everest/config/settings.json");
 
             if (settingsFile.exists())
-                System.out.println("Settings file found. Loading settings... ");
+                LoggingService.logInfo("Settings file found. Loading settings.", LocalDateTime.now());
+            else {
+                LoggingService.logInfo("Settings file not found. Loading defaults.", LocalDateTime.now());
+                return;
+            }
 
             nodes = EverestUtilities.jsonMapper.readTree(settingsFile);
 
@@ -60,7 +64,9 @@ public class SettingsLoader implements Runnable {
             Settings.syntaxTheme = EverestUtilities.trimString(setStringSetting(Settings.syntaxTheme, "syntaxTheme"));
             Settings.showHistoryRange = setIntegerSetting(Settings.showHistoryRange, "showHistoryRange");
         } catch (IOException IOE) {
-            Services.loggingService.logInfo("Settings file not found. Using defaults.", LocalDateTime.now());
+            LoggingService.logInfo("Settings file contains invalid JSON. Loading defaults.", LocalDateTime.now());
+        } catch (NullPointerException NPE) {
+            LoggingService.logInfo("Settings file empty. Loading defualts", LocalDateTime.now());
         }
     }
 
@@ -69,9 +75,9 @@ public class SettingsLoader implements Runnable {
 
         if (value != null) {
             defaultValue = value.toString();
-            Services.loggingService.logInfo("[" + identifier + "]: Loaded: " + defaultValue, LocalDateTime.now());
+            LoggingService.logInfo("[" + identifier + "]: Loaded: " + defaultValue, LocalDateTime.now());
         } else {
-            Services.loggingService.logInfo("[" + identifier + "]: Not found. Using default value.", LocalDateTime.now());
+            LoggingService.logInfo("[" + identifier + "]: Not found. Using default value.", LocalDateTime.now());
         }
 
         return defaultValue;
@@ -82,9 +88,9 @@ public class SettingsLoader implements Runnable {
 
         if (value != null) {
             defaultValue = value.asInt();
-            Services.loggingService.logInfo("[" + identifier + "]: Loaded: " + defaultValue, LocalDateTime.now());
+            LoggingService.logInfo("[" + identifier + "]: Loaded: " + defaultValue, LocalDateTime.now());
         } else {
-            Services.loggingService.logInfo("[" + identifier + "]: Not found. Using default value.", LocalDateTime.now());
+            LoggingService.logInfo("[" + identifier + "]: Not found. Using default value.", LocalDateTime.now());
         }
 
         return defaultValue;
@@ -95,9 +101,9 @@ public class SettingsLoader implements Runnable {
 
         if (value != null) {
             defaultValue = value.asBoolean();
-            Services.loggingService.logInfo("[" + identifier + "]: Loaded: " + defaultValue, LocalDateTime.now());
+            LoggingService.logInfo("[" + identifier + "]: Loaded: " + defaultValue, LocalDateTime.now());
         } else {
-            Services.loggingService.logInfo("[" + identifier + "]: Not found. Using default value.", LocalDateTime.now());
+            LoggingService.logInfo("[" + identifier + "]: Not found. Using default value.", LocalDateTime.now());
         }
 
         return defaultValue;

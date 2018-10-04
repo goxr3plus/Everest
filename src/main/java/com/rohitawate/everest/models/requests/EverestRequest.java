@@ -16,6 +16,8 @@
 
 package com.rohitawate.everest.models.requests;
 
+import com.rohitawate.everest.auth.AuthProvider;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,18 +25,8 @@ import java.util.HashMap;
 
 public abstract class EverestRequest implements Serializable {
     private URL target;
+    private AuthProvider authProvider;
     private HashMap<String, String> headers;
-
-    EverestRequest() {
-    }
-
-    EverestRequest(String target) throws MalformedURLException {
-        this.target = new URL(target);
-    }
-
-    EverestRequest(URL target) {
-        this.target = target;
-    }
 
     public void setTarget(String target) throws MalformedURLException {
         this.target = new URL(target);
@@ -44,15 +36,19 @@ public abstract class EverestRequest implements Serializable {
         return this.target;
     }
 
-    public void addHeader(String key, String value) {
-        headers.put(key, value);
-    }
-
     public void setHeaders(HashMap<String, String> headers) {
         this.headers = headers;
     }
 
     public HashMap<String, String> getHeaders() {
         return this.headers;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
     }
 }

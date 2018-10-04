@@ -16,55 +16,51 @@
 
 package com.rohitawate.everest.logging;
 
-import com.rohitawate.everest.misc.Services;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.Executor;
 
 public class LoggingService {
-    private Logger logger;
-    private DateTimeFormatter dateFormat;
-    private Log log;
+    private static Executor executor = MoreExecutors.directExecutor();
+    private static final Logger logger = new Logger(Level.INFO);
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    static final Log log = new Log();
 
-    public LoggingService(Level writerLevel) {
-        this.log = new Log();
-        this.logger = new Logger(writerLevel);
-        this.dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-    }
-
-    public void logSevere(String message, Exception exception, LocalDateTime time) {
+    public static void logSevere(String message, Exception exception, LocalDateTime time) {
         setValues(message, exception, time);
-        Services.singleExecutor.execute(severeLogger);
+        executor.execute(severeLogger);
     }
 
-    public void logWarning(String message, Exception exception, LocalDateTime time) {
+    public static void logWarning(String message, Exception exception, LocalDateTime time) {
         setValues(message, exception, time);
-        Services.singleExecutor.execute(warningLogger);
+        executor.execute(warningLogger);
     }
 
-    public void logInfo(String message, LocalDateTime time) {
+    public static void logInfo(String message, LocalDateTime time) {
         setValues(message, null, time);
-        Services.singleExecutor.execute(infoLogger);
+        executor.execute(infoLogger);
     }
 
-    private void setValues(String message, Exception exception, LocalDateTime time) {
-        this.log.message = message;
-        this.log.exception = exception;
-        this.log.time = dateFormat.format(time);
+    private static void setValues(String message, Exception exception, LocalDateTime time) {
+        log.message = message;
+        log.exception = exception;
+        log.time = dateFormat.format(time);
     }
 
-    private Runnable severeLogger = () -> {
-        this.log.level = Level.SEVERE;
-        this.logger.log(this.log);
+    private static Runnable severeLogger = () -> {
+        log.level = Level.SEVERE;
+        logger.log();
     };
 
-    private Runnable warningLogger = () -> {
-        this.log.level = Level.WARNING;
-        this.logger.log(log);
+    private static Runnable warningLogger = () -> {
+        log.level = Level.WARNING;
+        logger.log();
     };
 
-    private Runnable infoLogger = () -> {
-        this.log.level = Level.INFO;
-        this.logger.log(log);
+    private static Runnable infoLogger = () -> {
+        log.level = Level.INFO;
+        logger.log();
     };
 }
